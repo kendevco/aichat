@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect, useRef } from "react";
 import { ArrowDownCircleIcon } from "@heroicons/react/24/outline";
 import { collection, orderBy, query } from "firebase/firestore";
 import { useSession } from "next-auth/react";
@@ -28,8 +28,18 @@ function Chat({ chatId }: Props) {
       )
   );
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
-    <div className="flex-1 overflow-y-auto ">
+    <div className="flex-1 overflow-y-auto">
       {messages?.empty && (
         <>
           <p className="mt-10 text-center text-white">
@@ -42,6 +52,7 @@ function Chat({ chatId }: Props) {
       {messages?.docs.map((message) => (
         <Message key={message.id} message={message.data()} />
       ))}
+      <div ref={messagesEndRef} />
     </div>
   );
 }
