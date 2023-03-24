@@ -17,7 +17,7 @@ function HomePage() {
             target="_blank"
             className="text-white font-bold"
           >
-            Sonny Songha
+            Kenneth Courtney based upon Sonny Songha's outstanding training video.
           </a>{" "}
         </p>
       </div>

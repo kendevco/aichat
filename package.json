@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--inspect-brk=9228 next dev",
+    "dev:watch": "next dev",
     "build": "next build",
     "start": "next start"
   },
