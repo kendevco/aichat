@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--inspect next dev",
+    "dev": "cross-env NODE_OPTIONS=--inspect-brk=9228 next dev",
     "build": "next build",
     "start": "next start"
   },
@@ -20,6 +20,7 @@
     "swr": "^2.1.0"
   },
   "devDependencies": {
+    "@types/firebase": "^3.2.1",
     "@types/node": "^18.15.5",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",

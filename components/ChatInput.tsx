@@ -3,7 +3,7 @@
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { FormEvent, useState } from "react";
 import { useSession } from "next-auth/react";
-import { serverTimestamp, addDoc, collection } from "firebase/firestore";
+import { serverTimestamp, addDoc, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-hot-toast";
 import ModelSelection from "./ModelSelection";
@@ -12,6 +12,20 @@ import useSWR from "swr";
 type Props = {
   chatId: string;
 };
+
+async function fetchChatMessages(chatId: string, userEmail: string) {
+  const messagesRef = collection(db, "users", userEmail, "chats", chatId, "messages");
+  const messagesQuery = query(messagesRef, orderBy("createdAt", "desc"), limit(5));
+  const messagesSnapshot = await getDocs(messagesQuery);
+
+  const messages: { text: string; createdAt: any }[] = [];
+  messagesSnapshot.forEach((doc) => {
+    messages.unshift(doc.data() as { text: string; createdAt: any });
+  });
+
+  return messages;
+}
+
 
 function ChatInput({ chatId }: Props) {
   const [prompt, setPrompt] = useState("");
@@ -53,7 +67,8 @@ function ChatInput({ chatId }: Props) {
       message
     );
 
-    // Toast - Loading
+    const chatMessages = await fetchChatMessages(chatId, session?.user?.email!);
+
     const notification = toast.loading("Please wait...");
 
     await fetch("/api/askQuestion", {
@@ -66,10 +81,10 @@ function ChatInput({ chatId }: Props) {
         chatId,
         model,
         session,
+        chatMessages,
       }),
     }).then(() => {
       console.log(input);
-      // Toast - Success
       toast.success("AI Chatbot has responded!", {
         id: notification,
       });
@@ -92,16 +107,16 @@ function ChatInput({ chatId }: Props) {
           type="submit"
           disabled={!prompt || !session}
           className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded cursor-pointer text-[16px] disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-[#11A37F]"
-        >
-          <PaperAirplaneIcon className="h-4 w-4 -rotate-45" />
-        </button>
-      </form>
-
-      <div className="md:hidden">
-        <ModelSelection />
+          >
+            <PaperAirplaneIcon className="h-4 w-4 -rotate-45" />
+          </button>
+        </form>
+      
+        <div className="md:hidden">
+          <ModelSelection />
+        </div>
       </div>
-    </div>
+      
   );
 }
-
 export default ChatInput;
