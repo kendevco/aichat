@@ -1,3 +1,4 @@
+"use client";
 import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -28,8 +29,11 @@ function ChatRow({ id }: Props) {
   }, [pathname]);
 
   const removeChat = async () => {
-    await deleteDoc(doc(db, "users", session?.user?.email!, "chats", id));
-    router.replace("/");
+    const shouldDelete = confirm("Are you sure you want to delete this chat?");
+    if (shouldDelete) {
+      await deleteDoc(doc(db, "users", session?.user?.email!, "chats", id));
+      router.replace("/");
+    }
   };
 
   return (

@@ -41,6 +41,14 @@ function ChatInput({ chatId }: Props) {
     }
   };
 
+  const resizeTextarea = () => {
+    if (textareaRef.current) {
+      textareaRef.current.rows = 1;
+      const numRows = Math.min(textareaRef.current.scrollHeight / 20, 8);
+      textareaRef.current.rows = numRows;
+    }
+  };
+  
   const sendMessage = async () => {
     if (!prompt) return;
 
@@ -94,6 +102,7 @@ function ChatInput({ chatId }: Props) {
       });
     });
     textareaRef.current?.focus();
+    resizeTextarea(); // Add this line to resize the textarea after sending the message
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
