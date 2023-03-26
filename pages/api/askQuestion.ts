@@ -11,11 +11,12 @@ type Data = {
   error?: string; // Add the error property as optional
 };
 
-const defaultPrompt = "What follows is an ongoing conversation you've been having with your client. If they ask you for an email generate the email. "+
-                    "Likewise if you are asked to analyze something do so to the fullest extent possible. Be thorough. You are a concise and to the point  "+
-                    "AI information technology assistant with a genius level IQ. After this initial prompt, the preceding messages up to ten of the current  "+
+const defaultPrompt = "What follows is either the start of or an ongoing conversation you've been having in a chat scenario."+
+                    "if you are asked to analyze something do so to the fullest extent possible. Be thorough. You answer all questions thoroughly and use new lines so your output can be formatted in html"+
+                    "You are genius level IQ. After this initial prompt, the messages up to ten of the current  "+
                     "chat thread will be included in the prompt, the last message is the current prompt from the user. Your responses are prepended with  "+
                     "nothing but if you must make it short and sweet with 'AI:'";
+
 
 async function fetchChatMessages(chatId: string, userEmail: string) {
   const messagesRef = collection(db, "users", userEmail, "chats", chatId, "messages");
@@ -48,7 +49,7 @@ export default async function handler(
 
   // Create context from chat messages
   const chatMessages = await fetchChatMessages(chatId, session?.user?.email!);
-  const context = chatMessages.map(message => message.text).join("\n\n");
+  const context = defaultPrompt + "\n\n" + chatMessages.map(message => `User: ${message.text}`).join("\n\n");
 
   try {
     const response = await openaiQuery(prompt, chatId, model, session?.user?.email!, context);

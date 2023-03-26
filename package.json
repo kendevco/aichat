@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--inspect next dev",
+    "dev": "cross-env NODE_OPTIONS=--inspect=127.0.0.1:9229 next dev",
     "dev:watch": "next dev",
     "build": "next build",
     "start": "next start"

@@ -12,10 +12,12 @@ const MAX_TOKENS = {
 const openaiQuery = async (prompt: string, chatId: string, model: string, userEmail: string, context: string) => {
   const maxTokens = MAX_TOKENS[model] || 1000; // Default to 1000 if model not found
 
+  //console.log(`Context and prompt: ${context}\n\nUser: ${prompt}`);
+
   const res = await openai
     .createCompletion({
       model,
-      prompt: `${context}\n\nUser: ${prompt}`,
+      prompt: `${context}\n\nNewest Prompt: ${prompt}`,
       temperature: 0.9,
       top_p: 1,
       max_tokens: maxTokens,

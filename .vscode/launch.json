@@ -1,20 +1,19 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "pwa-node",
-        "request": "launch",
-        "name": "Launch Next.js",
-        "runtimeExecutable": "npm",
-        "runtimeArgs": ["run", "dev"],
-        "port": 9229,
-        "console": "integratedTerminal",
-        "resolveSourceMapLocations": [
-          "${workspaceFolder}/**",
-          "!**/node_modules/**"
-        ],
-        "sourceMaps": true
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Launch Next.js",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 9229,
+      "console": "integratedTerminal",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ],
+      "sourceMaps": true
+    }
+  ]
+}
