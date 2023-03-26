@@ -1,6 +1,6 @@
 # aichat
 
-AIChat based upon Sonny Sangha's ChatGPT Messenger 2.0 with REACT! (Next.js 13, Firebase, Tailwind CSS, TypeScript) (https://www.youtube.com/watch?v=V6Hq_EX2LLM)
+AIChat is a chat client based on Sonny Sangha's ChatGPT Messenger 2.0, built using Next.js 13, Firebase, Tailwind CSS, and TypeScript. This version of the project includes improvements such as revised OpenAI API calls that use the chat engine API and take into account prior messages in the thread to provide more context, the ability to automatically scroll to the bottom of the chat history pane when new messages are received, chat thread delete confirmation, and an expanding/contracting chat input. The goal is to create a ChatGPT client that can be directed at any model, ideally one that includes a chat completion API. For more information on running a ChatGPT-like AI on your own machine, check out the LLaMA and Alpaca projects.
 
 ## Credits
 
