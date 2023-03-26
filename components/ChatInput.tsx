@@ -12,18 +12,6 @@ type Props = {
   chatId: string;
 };
 
-async function fetchChatMessages(chatId: string, userEmail: string) {
-  const messagesRef = collection(db, "users", userEmail, "chats", chatId, "messages");
-  const messagesQuery = query(messagesRef, orderBy("createdAt", "desc"), limit(5));
-  const messagesSnapshot = await getDocs(messagesQuery);
-
-  const messages: { text: string; createdAt: any }[] = [];
-  messagesSnapshot.forEach((doc) => {
-    messages.unshift(doc.data() as { text: string; createdAt: any });
-  });
-
-  return messages;
-}
 
 function ChatInput({ chatId }: Props) {
   const [prompt, setPrompt] = useState("");
@@ -79,9 +67,7 @@ function ChatInput({ chatId }: Props) {
       message
     );
 
-    const chatMessages = await fetchChatMessages(chatId, session?.user?.email!);
-
-    const notification = toast.loading("Please wait...");
+      const notification = toast.loading("Please wait...");
 
     await fetch("/api/askQuestion", {
       method: "POST",
@@ -93,7 +79,6 @@ function ChatInput({ chatId }: Props) {
         chatId,
         model,
         session,
-        chatMessages,
       }),
     }).then(() => {
       console.log(input);
