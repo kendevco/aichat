@@ -1,8 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--inspect=127.0.0.1:9229 next dev",
-    "dev:watch": "next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
@@ -10,7 +9,7 @@
     "@heroicons/react": "^2.0.16",
     "firebase": "^9.17.2",
     "firebase-admin": "^11.5.0",
-    "next": "latest",
+    "next": "^13.4.3",
     "next-auth": "^4.20.1",
     "openai": "^3.2.1",
     "react": "18.2.0",

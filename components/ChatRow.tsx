@@ -1,4 +1,3 @@
-"use client";
 import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,6 +26,15 @@ function ChatRow({ id }: Props) {
     setActive(pathname.includes(id));
   }, [pathname]);
 
+  // Log the message data
+  useEffect(() => {
+    if (messages) {
+      messages.docs.forEach((message, index) => {
+        //console.log(`Chatrow Message ${index + 1}:`, message.data());
+      });
+    }
+  }, [messages]);
+
   const removeChat = async () => {
     const shouldDelete = confirm("Are you sure you want to delete this chat?");
     if (shouldDelete) {
@@ -35,14 +43,22 @@ function ChatRow({ id }: Props) {
     }
   };
 
+  const lastMessageData = messages?.docs?.[messages.docs.length - 1]?.data();
+  const firstMessageData = messages?.docs?.[0]?.data();
+
+  const firstMessageText = typeof firstMessageData?.text === 'string' ? firstMessageData.text.substring(0, 40) : '';
+  
+  console.log("firstMessageText: " + firstMessageText);
+
   return (
     <Link
       href={`/chat/${id}`}
       className={`chatRow justify-center mt-3 ${active && "bg-gray-700/50"}`}
     >
       <ChatBubbleLeftIcon className="h-5 w-5" />
+
       <p className="flex-1 truncate">
-      {messages?.docs?.[messages.docs.length - 1]?.data().text ?? "New Chat"}
+        {firstMessageText}
       </p>
 
       <TrashIcon

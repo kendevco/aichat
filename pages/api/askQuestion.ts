@@ -1,61 +1,102 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+
+// askQuestion.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import openaiQuery from "../../lib/queryApi";
 import admin from "firebase-admin";
 import { adminDB } from "../../firebaseAdmin";
-import { query, collection, getDocs, limit, orderBy } from "firebase/firestore";
+import { query, collection, getDocs, orderBy } from "firebase/firestore";
 import { db } from "../../firebase";
 
 type Data = {
   answer: string;
-  error?: string; // Add the error property as optional
+  error?: string;
 };
 
-const defaultPrompt = "What follows is either the start of or an ongoing conversation you've been having in a chat scenario."+
-                    "if you are asked to analyze something do so to the fullest extent possible. Be thorough. You answer all questions thoroughly and use new lines so your output can be formatted in html"+
-                    "You are genius level IQ. After this initial prompt, the messages up to ten of the current  "+
-                    "chat thread will be included in the prompt, the last message is the current prompt from the user. Your responses are prepended with  "+
-                    "nothing but if you must make it short and sweet with 'AI:'";
-
+interface Message {
+  text: string;
+  createdAt: admin.firestore.Timestamp;
+  user: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
+}
 
 async function fetchChatMessages(chatId: string, userEmail: string) {
-  const messagesRef = collection(db, "users", userEmail, "chats", chatId, "messages");
-  const messagesQuery = query(messagesRef, orderBy("createdAt", "desc"), limit(10));
+  const messagesRef = collection(
+    db,
+    "users",
+    userEmail,
+    "chats",
+    chatId,
+    "messages"
+  );
+  const messagesQuery = query(messagesRef, orderBy("createdAt", "asc"));
   const messagesSnapshot = await getDocs(messagesQuery);
 
-  const messages: { text: string; createdAt: any }[] = [];
+  const allMessages: { role: string; content: string }[] = [];
+
   messagesSnapshot.forEach((doc) => {
-    messages.unshift(doc.data() as { text: string; createdAt: any });
+    const messageData = doc.data() as {
+      text: string;
+      createdAt: any;
+      user: { _id: string; avatar: string };
+    };
+    const role = messageData.user._id === userEmail ? "user" : "assistant";
+    allMessages.push({ role, content: messageData.text });
   });
 
-  return messages;
+  const lastMessages: { role: string; content: string }[] = [];
+  let userCount = 0;
+  let assistantCount = 0;
+
+  for (let i = allMessages.length - 1; i >= 0; i--) {
+    if (userCount < 5 && allMessages[i].role === "user") {
+      lastMessages.unshift(allMessages[i]);
+      userCount++;
+    } else if (assistantCount < 5 && allMessages[i].role === "assistant") {
+      lastMessages.unshift(allMessages[i]);
+      assistantCount++;
+    }
+
+    if (userCount >= 5 && assistantCount >= 5) {
+      break;
+    }
+  }
+
+  return lastMessages;
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { prompt, chatId, model, session } = req.body;
-
-  if (!prompt) {
-    res.status(400).json({ answer: "Please provide a prompt!" });
-    return;
-  }
-
-  if (!chatId) {
-    res.status(400).json({ answer: "Please provide a valid chat ID" });
-    return;
-  }
-
-  // Create context from chat messages
-  const chatMessages = await fetchChatMessages(chatId, session?.user?.email!);
-  const context = defaultPrompt + "\n\n" + chatMessages.map(message => `User: ${message.text}`).join("\n\n");
-
   try {
-    const response = await openaiQuery(prompt, chatId, model, session?.user?.email!, context);
+    const { prompt, chatId, model, session } = req.body;
+
+    if (!prompt) {
+      throw new Error("Please provide a prompt!");
+    }
+
+    if (!chatId) {
+      throw new Error("Please provide a valid chat ID");
+    }
+
+    const defaultPrompt =
+      "AI Chatbot able to emulate whatever personality is appropriate for the situation. For example, 'I am a doctor' or 'I am a lawyer'";
+    const chatMessages = await fetchChatMessages(chatId, session?.user?.email!);
+    const messages = [
+      { role: "system", content: defaultPrompt },
+      ...chatMessages,
+    ];
+
+    const response = await openaiQuery(model, messages);
 
     const message: Message = {
-      text: response || "AI Chatbot was unable to find the answer to that",
+      text:
+        (response as string) ||
+        "AI Chatbot was unable to find the answer to that",
       createdAt: admin.firestore.Timestamp.now(),
       user: {
         _id: "AIChatbot",
@@ -64,7 +105,6 @@ export default async function handler(
       },
     };
 
-    // Add message to chat history
     await adminDB
       .collection("users")
       .doc(session?.user?.email!)
@@ -74,10 +114,13 @@ export default async function handler(
       .add(message);
 
     res.status(200).json({ answer: message.text });
-
   } catch (err: any) {
-    // Handle errors
     console.error("Error:", err);
-    res.status(500).json({ answer: "An error occurred while processing your request.", error: err.message });
+    res
+      .status(500)
+      .json({
+        answer: "An error occurred while processing your request.",
+        error: err.message,
+      });
   }
 }

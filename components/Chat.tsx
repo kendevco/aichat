@@ -28,6 +28,8 @@ function Chat({ chatId }: Props) {
       )
   );
 
+  console.log("Messages: " + messages);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -1,0 +1,25 @@
+2023/09/16-10:56:52.135 4aec Reusing MANIFEST C:\Data\Dev\AI\ai-chatbot\.vscode\brave-profile\Default\IndexedDB\http_localhost_3000.indexeddb.leveldb/MANIFEST-000001
+2023/09/16-10:56:52.135 4aec Recovering log #7
+2023/09/16-10:56:52.135 4aec Reusing old log C:\Data\Dev\AI\ai-chatbot\.vscode\brave-profile\Default\IndexedDB\http_localhost_3000.indexeddb.leveldb/000007.log 
+2023/09/16-10:56:52.162 77ec Level-0 table #11: started
+2023/09/16-10:56:52.166 77ec Level-0 table #11: 1498 bytes OK
+2023/09/16-10:56:52.172 77ec Delete type=0 #7
+2023/09/16-10:56:52.172 35f0 Manual compaction at level-0 from '\x00\x06\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at '\x00\x06\x00\x00\x05' @ 147 : 1
+2023/09/16-10:56:52.172 35f0 Compacting 1@0 + 1@1 files
+2023/09/16-10:56:52.175 35f0 Generated table #12@0: 42 keys, 1201 bytes
+2023/09/16-10:56:52.175 35f0 Compacted 1@0 + 1@1 files => 1201 bytes
+2023/09/16-10:56:52.182 35f0 compacted to: files[ 0 1 1 0 0 0 0 ]
+2023/09/16-10:56:52.182 35f0 Delete type=2 #11
+2023/09/16-10:56:52.182 35f0 Manual compaction at level-0 from '\x00\x06\x00\x00\x05' @ 147 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at (end)
+2023/09/16-10:59:42.535 4aec Level-0 table #14: started
+2023/09/16-10:59:42.540 4aec Level-0 table #14: 606 bytes OK
+2023/09/16-10:59:42.543 4aec Delete type=2 #8
+2023/09/16-10:59:42.544 4aec Delete type=0 #10
+2023/09/16-10:59:42.544 4aec Manual compaction at level-0 from '\x00\x07\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x08\x00\x00\x00' @ 0 : 0; will stop at '\x00\x07\x00\x00\x05' @ 166 : 1
+2023/09/16-10:59:42.544 4aec Compacting 1@0 + 1@1 files
+2023/09/16-10:59:42.549 4aec Generated table #15@0: 43 keys, 1211 bytes
+2023/09/16-10:59:42.549 4aec Compacted 1@0 + 1@1 files => 1211 bytes
+2023/09/16-10:59:42.553 4aec compacted to: files[ 0 1 1 0 0 0 0 ]
+2023/09/16-10:59:42.553 4aec Delete type=2 #14
+2023/09/16-10:59:42.553 4aec Manual compaction at level-0 from '\x00\x07\x00\x00\x05' @ 166 : 1 .. '\x00\x08\x00\x00\x00' @ 0 : 0; will stop at (end)
+2023/09/16-11:00:10.523 77ec Manual compaction at level-0 from '\x00\x08\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x09\x00\x00\x00' @ 0 : 0; will stop at (end)

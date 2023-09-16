@@ -9,6 +9,7 @@ import ChatRow from "./ChatRow";
 import ModelSelection from "./ModelSelection";
 
 function Sidebar() {
+  
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -19,6 +20,8 @@ function Sidebar() {
         orderBy("createdAt", "asc")
       )
   );
+
+  console.log("Chats: " + chats);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);

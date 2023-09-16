@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
-import { serverTimestamp, addDoc, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { serverTimestamp, addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-hot-toast";
 import ModelSelection from "./ModelSelection";
@@ -12,14 +12,13 @@ type Props = {
   chatId: string;
 };
 
-
 function ChatInput({ chatId }: Props) {
   const [prompt, setPrompt] = useState("");
   const { data: session } = useSession();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: model } = useSWR("model", {
-    fallbackData: "text-davinci-003",
+    fallbackData: "gpt-4",
   });
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -36,14 +35,14 @@ function ChatInput({ chatId }: Props) {
       textareaRef.current.rows = numRows;
     }
   };
-  
+
   const sendMessage = async () => {
     if (!prompt) return;
 
     const input = prompt.trim();
     setPrompt("");
 
-    const message: Message = {
+    const message = {
       text: input,
       createdAt: serverTimestamp(),
       user: {
@@ -55,39 +54,45 @@ function ChatInput({ chatId }: Props) {
       },
     };
 
-    await addDoc(
-      collection(
-        db,
-        "users",
-        session?.user?.email!,
-        "chats",
-        chatId,
-        "messages"
-      ),
-      message
-    );
+    try {
+      await addDoc(
+        collection(
+          db,
+          "users",
+          session?.user?.email!,
+          "chats",
+          chatId,
+          "messages"
+        ),
+        message
+      );
 
       const notification = toast.loading("Please wait...");
 
-    await fetch("/api/askQuestion", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: input,
-        chatId,
-        model,
-        session,
-      }),
-    }).then(() => {
+      await fetch("/api/askQuestion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: input,
+          chatId,
+          model,
+          session,
+        }),
+      });
+
       console.log(input);
       toast.success("AI Chatbot has responded!", {
         id: notification,
       });
-    });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again.");
+    }
+
     textareaRef.current?.focus();
-    resizeTextarea(); // Add this line to resize the textarea after sending the message
+    resizeTextarea();
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -100,7 +105,13 @@ function ChatInput({ chatId }: Props) {
 
   return (
     <div className="bg-gray-700/50 text-gray-400 rounded-lg text-[16px]">
-      <form onSubmit={(e) => {e.preventDefault(); sendMessage();}} className="p-5 space-x-5 flex">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendMessage();
+        }}
+        className="p-5 space-x-5 flex"
+      >
         <textarea
           ref={textareaRef}
           rows={1}
@@ -113,6 +124,7 @@ function ChatInput({ chatId }: Props) {
         />
 
         <button
+          title="Send Message"
           type="button"
           onClick={sendMessage}
           disabled={!prompt || !session}
@@ -121,12 +133,12 @@ function ChatInput({ chatId }: Props) {
           <PaperAirplaneIcon className="h-4 w-4 -rotate-45" />
         </button>
       </form>
-      
+
       <div className="md:hidden">
         <ModelSelection />
       </div>
     </div>
-    
   );
 }
+
 export default ChatInput;

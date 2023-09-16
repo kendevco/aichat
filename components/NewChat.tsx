@@ -11,17 +11,25 @@ function NewChat() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const createChat = async () => {
-    const doc = await addDoc(
-      collection(db, "users", session?.user?.email!, "chats"),
-      {
-        // messages: [],
-        userId: session?.user?.email!,
-        createdAt: serverTimestamp(),
-      }
-    );
+  console.log("NewChat: Current User: " + session?.user?.email);
 
-    router.push(`/chat/${doc.id}`);
+  const createChat = async () => {
+    try {
+      const doc = await addDoc(
+        collection(db, "users", session?.user?.email!, "chats"),
+        {
+          // messages: [],
+          userId: session?.user?.email!,
+          createdAt: serverTimestamp(),
+        }
+      );
+
+      console.log("Doc: " + doc);
+
+      router.push(`/chat/${doc.id}`);
+    } catch (error) {
+      console.error("Error connecting to Firebase:", error);
+    }
   };
 
   return (

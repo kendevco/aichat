@@ -3,12 +3,12 @@
 import useSWR from "swr";
 import Select from "react-select";
 
-const fetModels = () => fetch("/api/getEngines").then((res) => res.json());
+const fetchModels = () => fetch("/api/getEngines").then((res) => res.json());
 
 function ModelSelection() {
-  const { data: models, isLoading } = useSWR("models", fetModels);
+  const { data: models, isLoading } = useSWR("models", fetchModels);
   const { data: model, mutate: setModel } = useSWR("model", {
-    fallbackData: "text-davinci-003",
+    fallbackData: "gpt-4",
   });
 
   return (
@@ -21,8 +21,27 @@ function ModelSelection() {
         isSearchable
         isLoading={isLoading}
         menuPosition="fixed"
-        classNames={{
-          control: (state) => "bg-[#434654] border-[#434654]",
+        styles={{
+          control: (base) => ({
+            ...base,
+            backgroundColor: "#434654",
+            borderColor: "#434654",
+            ":hover": {
+              borderColor: "#434654",
+            },
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: "white",
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: "#434654",
+          }),
+          option: (base) => ({
+            ...base,
+            color: "white",
+          }),
         }}
         onChange={(e) => setModel(e.value)}
       />
